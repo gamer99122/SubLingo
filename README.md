@@ -83,7 +83,7 @@ uv run bench.py mt bench_out/asr_large.json --models gemma4:26b --glossary gloss
 
 - **PyAV 19 與 faster-whisper 1.2.1 不相容**：`pyproject.toml` 已鎖定 `av<19`
 - **kotoba-whisper 逐字時間戳會讓程式崩潰**：模型設定檔的 `alignment_heads` 指到不存在的解碼器層；`bench.py` 會自動複製一份修正版到 `models/`
-- **Ollama 在混合架構 CPU 上預設執行緒偏少**：明確設 `num_thread=14`，生成速度約為預設的 1.7 倍
+- **Ollama 在混合架構 CPU 上預設執行緒偏少**：明確設 `num_thread=14` 後，gemma4:26b 翻譯總耗時從 950 秒降到 544 秒
 - **記憶體沒跑在標稱速度時翻譯會變慢**：DDR4-3200 若實跑 2400，請到 BIOS 開啟 XMP
 
 ## 開發計畫

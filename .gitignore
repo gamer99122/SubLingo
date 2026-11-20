@@ -1,0 +1,12 @@
+# Python / uv
+.venv/
+__pycache__/
+
+# 模型與實測輸出（體積大、可重新產生）
+models/
+bench_out/
+
+# 影片與字幕成品
+*.mp4
+*.MP4
+*.srt

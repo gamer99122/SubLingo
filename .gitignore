@@ -10,3 +10,5 @@ bench_out/
 *.mp4
 *.MP4
 *.srt
+*.srt.bak
+*.sublingo/

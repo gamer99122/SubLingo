@@ -15,7 +15,12 @@
 - [x] 安裝 Ollama；`gemma4:26b`、`qwen3:30b-a3b` 已下載（各 18 GB，名稱已用 `ollama list` 確認）
 - [ ] 挑 10 分鐘直播片段跑 `bench.py asr`（含 `--threads 6` 對照）
 - [ ] 準備 `glossary.txt`（成員名、團名、粉絲用語）跑 `bench.py mt`
-- [ ] 依實測結果定模型 → 實作斷句 → 輸出同名 SRT → Gradio
+- [x] 指令版 `sublingo.py`（斷句、幻聽過濾、名詞表、可接續、同名 SRT），`test_sublingo.py` 通過
+- [x] 實跑 9 分鐘影片：191 段、0 失敗，翻譯 463 秒
+- [ ] 使用者播放檢查字幕時間軸與翻譯
+- [ ] 建立 `glossary.txt`
+- [ ] Gradio 介面
+- 決定：不認得的暱稱維持現狀（不改成 OOO）
 
 ## 實測結果（9 分鐘影片，2026-11-21）
 - ASR：kotoba RTF 0.36 / turbo 0.25 / large-v3 0.68。large-v3 最準且有標點 → 暫定 large-v3，turbo 當快速模式；淘汰 kotoba

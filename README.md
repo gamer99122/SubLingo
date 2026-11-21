@@ -6,7 +6,19 @@
 - 主要針對日本偶像直播的聊天內容調整
 - 輸出和影片同名的 `.srt`，放在影片旁邊，播放器（PotPlayer、VLC、MPC-HC）會自動載入
 
-> **目前狀態：實測階段。** 本 repo 現在只有用來比較模型的實測腳本 `bench.py`，正式的一鍵處理工具與圖形介面尚在開發中。進度見 [PROGRESS.md](PROGRESS.md)。
+> **目前狀態：** 指令版 `sublingo.py` 已可使用；圖形介面開發中。進度見 [PROGRESS.md](PROGRESS.md)。
+
+## 使用方式
+
+```
+uv run sublingo.py 直播.mp4            # large-v3 辨識（品質優先）
+uv run sublingo.py 直播.mp4 --fast     # turbo 辨識（快速模式）
+uv run sublingo.py 直播.mp4 --redo     # 忽略中間檔，全部重做
+```
+
+完成後會在影片旁產生 `直播.srt`（中文在上、日文在下）。中間檔存在 `直播.sublingo/`，中斷後重跑會從上次進度接續；已有的 `.srt` 會先備份成 `.srt.bak`。
+
+1 小時影片在 i5-13500 上約需 1.5 小時（語音辨識約 41 分＋翻譯約 51 分）。
 
 ## 處理流程
 
@@ -14,7 +26,7 @@
 影片.mp4
   → ① 讀取音訊（PyAV）
   → ② 語音辨識（faster-whisper + VAD，CPU int8）
-  → ③ 清理幻聽句、重新斷句            ← 開發中
+  → ③ 清理幻聽句、重新斷句（每段 ≤ 6 秒、≤ 20 字）
   → ④ 翻譯（Ollama 本機 LLM，分批 + 句數檢查 + OpenCC 轉台灣繁體）
   → ⑤ 輸出雙語 影片.srt
 ```
@@ -60,7 +72,7 @@ uv sync
 
 Whisper 模型會在第一次執行時自動下載（每個約 1.5–3 GB）。
 
-## 使用實測腳本
+## 實測腳本（比較模型用）
 
 ```
 # 語音辨識：比較三個模型（--duration 0 = 到片尾）
@@ -85,10 +97,11 @@ uv run bench.py mt bench_out/asr_large.json --models gemma4:26b --glossary gloss
 - **kotoba-whisper 逐字時間戳會讓程式崩潰**：模型設定檔的 `alignment_heads` 指到不存在的解碼器層；`bench.py` 會自動複製一份修正版到 `models/`
 - **Ollama 在混合架構 CPU 上預設執行緒偏少**：明確設 `num_thread=14` 後，gemma4:26b 翻譯總耗時從 950 秒降到 544 秒
 - **記憶體沒跑在標稱速度時翻譯會變慢**：DDR4-3200 若實跑 2400，請到 BIOS 開啟 XMP
+- **OpenCC 會把已是繁體的「只有」誤轉成「隻有」**：轉換時保護「只」字
 
 ## 開發計畫
 
-- [ ] 正式處理流程 `sublingo.py`：一個指令從影片產生雙語 SRT
-- [ ] 幻聽句過濾與重新斷句（每段 ≤ 6 秒、≤ 20 字）
-- [ ] 名詞表同時用於語音辨識（`hotwords`）與翻譯
+- [x] 指令版 `sublingo.py`：一個指令從影片產生雙語 SRT
+- [x] 幻聽句過濾與重新斷句
+- [x] 名詞表同時用於語音辨識（`hotwords`）與翻譯
 - [ ] Gradio 本機網頁介面
